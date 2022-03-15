@@ -4,28 +4,15 @@
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:orientation="vertical"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         tools:context=".view.fragments.DiscoverFragment">
 
-<!--        <com.arlib.floatingsearchview.FloatingSearchView-->
-<!--            android:id="@+id/searchView"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            app:floatingSearch_close_search_on_keyboard_dismiss="true"-->
-<!--            app:floatingSearch_leftActionMode="showSearch"-->
-<!--            app:floatingSearch_searchHint="Search..."-->
-<!--            app:floatingSearch_showSearchKey="true"-->
-<!--            app:floatingSearch_suggestionsListAnimDuration="250"-->
-<!--            app:layout_constraintTop_toTopOf="parent"-->
-<!--            app:showAsAction="never" />-->
-
         <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="match_parent"
             android:id="@+id/mainRecyclerView"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:paddingTop="65sp"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ProgressBar

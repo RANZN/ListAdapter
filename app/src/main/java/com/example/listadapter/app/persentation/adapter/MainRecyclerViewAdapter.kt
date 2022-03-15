@@ -14,6 +14,7 @@ import com.example.listadapter.databinding.CarouselItemLayoutBinding
 import com.example.listadapter.databinding.FeaturedItemLayoutBinding
 import com.example.listadapter.databinding.ShoppableItemLayoutBinding
 import com.example.listadapter.app.persentation.listners.OnItemClick
+import com.example.listadapter.databinding.NestedItemLayoutBinding
 import java.lang.IllegalArgumentException
 
 class MainRecyclerViewAdapter(private val onItemClick: OnItemClick) : ListAdapter<ResultsItem, ViewHolder>(diffUtilCallBack) {
@@ -57,17 +58,20 @@ class MainRecyclerViewAdapter(private val onItemClick: OnItemClick) : ListAdapte
                 ViewHolder.CarouselViewHolder(binding)
             }
             R.layout.nested_item_layout -> {
-                val binding = ShoppableItemLayoutBinding.inflate(layoutInflater, parent, false)
-                ViewHolder.ShoppableCarouselViewHolder(binding)
+                val binding = NestedItemLayoutBinding.inflate(layoutInflater, parent, false)
+                ViewHolder.ItemViewHolder(binding)
             }
             else -> throw IllegalArgumentException("Invalid View Type")
         }
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) = when (holder) {
-        is ViewHolder.FeaturedViewHolder -> holder.bindData(getItem(position), onItemClick)
-        is ViewHolder.ShoppableCarouselViewHolder -> holder.bindData(getItem(position), onItemClick)
-        is ViewHolder.CarouselViewHolder -> holder.bindData(getItem(position), onItemClick)
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        when (holder) {
+            is ViewHolder.FeaturedViewHolder -> holder.bindData(getItem(position), onItemClick)
+            is ViewHolder.ShoppableCarouselViewHolder -> holder.bindData(getItem(position), onItemClick)
+            is ViewHolder.CarouselViewHolder -> holder.bindData(getItem(position), onItemClick)
+            is ViewHolder.ItemViewHolder -> holder.bindData(getItem(position), onItemClick)
+        }
     }
 }
 
@@ -79,12 +83,14 @@ sealed class ViewHolder(binding: ViewBinding) : RecyclerView.ViewHolder(binding.
                 layoutManager = LinearLayoutManager(binding.root.context, LinearLayoutManager.HORIZONTAL, false)
                 adapter = NestedRecyclerViewAdapter(data.items!!, onItemClick)
             }
+
         }
     }
 
     class FeaturedViewHolder(private val binding: FeaturedItemLayoutBinding) : ViewHolder(binding) {
         fun bindData(resultsItem: ResultsItem, onItemClick: OnItemClick) {
             binding.apply {
+                tvItemName.text = resultsItem.item?.name
                 Glide.with(featuredImage).load(resultsItem.item?.thumbnailUrl).into(featuredImage)
                 layout.setOnClickListener {
                     onItemClick.onItemClick(resultsItem.item?.id!!)
@@ -101,8 +107,20 @@ sealed class ViewHolder(binding: ViewBinding) : RecyclerView.ViewHolder(binding.
                     layoutManager = LinearLayoutManager(binding.root.context, LinearLayoutManager.HORIZONTAL, false)
                     adapter = NestedRecyclerViewAdapter(data.items!!, onItemClick)
                 }
-
             }
         }
     }
+
+    class ItemViewHolder(private val binding: NestedItemLayoutBinding) : ViewHolder(binding) {
+        fun bindData(result: ResultsItem, onItemClick: OnItemClick) {
+            binding.apply {
+                tvItemName.text = result.item?.name
+                Glide.with(ivItemImage).load(result.item?.thumbnailUrl).placeholder(R.drawable.ic_broken).into(ivItemImage)
+                layout.setOnClickListener {
+                    onItemClick.onItemClick(result.item?.id!!)
+                }
+            }
+        }
+    }
+
 }

@@ -1,26 +1,30 @@
 package com.example.listadapter.app.persentation.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.view.menu.MenuAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.listadapter.app.domain.model.ResultsItem
+import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
+import com.example.listadapter.R
 import com.example.listadapter.app.persentation.MainViewModel
 import com.example.listadapter.app.persentation.adapter.MainRecyclerViewAdapter
+import com.example.listadapter.app.persentation.listners.OnItemClick
 import com.example.listadapter.common.Resource
 import com.example.listadapter.databinding.FragmentDiscoverBinding
-import com.example.listadapter.app.persentation.listners.OnItemClick
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 
 class DiscoverFragment : Fragment(), OnItemClick {
 
     private lateinit var binding: FragmentDiscoverBinding
-    private lateinit var layoutAdapter: MainRecyclerViewAdapter
+    private lateinit var mainRecyclerViewAdapter: MainRecyclerViewAdapter
     private val viewModel by sharedViewModel<MainViewModel>()
 
     override fun onCreateView(
@@ -40,7 +44,7 @@ class DiscoverFragment : Fragment(), OnItemClick {
             when (result) {
                 is Resource.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    layoutAdapter.submitList(result.data?.results)
+                    mainRecyclerViewAdapter.submitList(result.data?.results)
                 }
                 is Resource.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
@@ -54,10 +58,26 @@ class DiscoverFragment : Fragment(), OnItemClick {
     }
 
     private fun setRecyclerView() {
-        layoutAdapter = MainRecyclerViewAdapter(this)
+        mainRecyclerViewAdapter = MainRecyclerViewAdapter(this)
+        val concatAdapter = ConcatAdapter(mainRecyclerViewAdapter)
+
+
+        val gridLayoutManager = GridLayoutManager(context, 3)
+
+        gridLayoutManager.spanSizeLookup = object : SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int =
+                when (mainRecyclerViewAdapter.getItemViewType(position)) {
+                    R.layout.featured_item_layout -> 3
+                    R.layout.carousel_item_layout -> 3
+                    R.layout.shoppable_item_layout -> 3
+                    R.layout.nested_item_layout -> 1
+                    else -> 3
+                }
+        }
+
         binding.mainRecyclerView.apply {
-            adapter = layoutAdapter
-            layoutManager = LinearLayoutManager(context)
+            layoutManager = gridLayoutManager
+            adapter = concatAdapter
         }
 
     }
@@ -66,5 +86,6 @@ class DiscoverFragment : Fragment(), OnItemClick {
 //        val intent = Intent(context, DetailedActivity::class.java)
 //        intent.putExtra("id", id)
 //        startActivity(intent)
+        Toast.makeText(context, "$id", Toast.LENGTH_SHORT).show()
     }
 }
