@@ -59,8 +59,12 @@ class DiscoverFragment : Fragment(), OnItemClick {
 
     private fun setRecyclerView() {
         mainRecyclerViewAdapter = MainRecyclerViewAdapter(this)
-        val concatAdapter = ConcatAdapter(mainRecyclerViewAdapter)
 
+        val concatAdapterConfig = ConcatAdapter.Config.Builder()
+            .setIsolateViewTypes(false)
+            .build()
+
+        val concatAdapter = ConcatAdapter(concatAdapterConfig, mainRecyclerViewAdapter)
 
         val gridLayoutManager = GridLayoutManager(context, 3)
 
