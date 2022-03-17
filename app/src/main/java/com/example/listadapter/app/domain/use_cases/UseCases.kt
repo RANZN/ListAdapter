@@ -1,3 +1,6 @@
 package com.example.listadapter.app.domain.use_cases
 
-data class UseCases(val getData: GetData)
+data class UseCases(
+    val getData: GetData,
+    val getAnotherData: GetAnotherData
+)

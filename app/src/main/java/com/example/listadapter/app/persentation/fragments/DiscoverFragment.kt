@@ -1,12 +1,10 @@
 package com.example.listadapter.app.persentation.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.view.menu.MenuAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ConcatAdapter
@@ -16,7 +14,7 @@ import com.example.listadapter.R
 import com.example.listadapter.app.persentation.MainViewModel
 import com.example.listadapter.app.persentation.adapter.MainRecyclerViewAdapter
 import com.example.listadapter.app.persentation.listners.OnItemClick
-import com.example.listadapter.common.Resource
+import com.example.listadapter.common.NetworkResult
 import com.example.listadapter.databinding.FragmentDiscoverBinding
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
@@ -25,6 +23,7 @@ class DiscoverFragment : Fragment(), OnItemClick {
 
     private lateinit var binding: FragmentDiscoverBinding
     private lateinit var mainRecyclerViewAdapter: MainRecyclerViewAdapter
+    private lateinit var mainRecyclerViewAdapter2: MainRecyclerViewAdapter
     private val viewModel by sharedViewModel<MainViewModel>()
 
     override fun onCreateView(
@@ -42,35 +41,39 @@ class DiscoverFragment : Fragment(), OnItemClick {
 
         viewModel.data.observe(viewLifecycleOwner, Observer { result ->
             when (result) {
-                is Resource.Success -> {
+                is NetworkResult.Success -> {
                     binding.progressBar.visibility = View.GONE
                     mainRecyclerViewAdapter.submitList(result.data?.results)
                 }
-                is Resource.Loading -> {
+                is NetworkResult.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
                 }
-                is Resource.Error -> {
+                is NetworkResult.Error -> {
                     binding.progressBar.visibility = View.GONE
                     Toast.makeText(context, result.message.toString(), Toast.LENGTH_SHORT).show()
                 }
             }
         })
+        viewModel.data2.observe(viewLifecycleOwner, Observer {
+            mainRecyclerViewAdapter2.submitList(it?.results)
+        })
     }
 
     private fun setRecyclerView() {
         mainRecyclerViewAdapter = MainRecyclerViewAdapter(this)
+        mainRecyclerViewAdapter2 = MainRecyclerViewAdapter(this)
 
         val concatAdapterConfig = ConcatAdapter.Config.Builder()
             .setIsolateViewTypes(false)
             .build()
 
-        val concatAdapter = ConcatAdapter(concatAdapterConfig, mainRecyclerViewAdapter)
+        val concatAdapter = ConcatAdapter(concatAdapterConfig, mainRecyclerViewAdapter, mainRecyclerViewAdapter2)
 
         val gridLayoutManager = GridLayoutManager(context, 3)
 
         gridLayoutManager.spanSizeLookup = object : SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int =
-                when (mainRecyclerViewAdapter.getItemViewType(position)) {
+                when (concatAdapter.getItemViewType(position)) {
                     R.layout.featured_item_layout -> 3
                     R.layout.carousel_item_layout -> 3
                     R.layout.shoppable_item_layout -> 3
