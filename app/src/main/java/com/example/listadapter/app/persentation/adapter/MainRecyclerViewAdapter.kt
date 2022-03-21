@@ -10,11 +10,8 @@ import androidx.viewbinding.ViewBinding
 import com.bumptech.glide.Glide
 import com.example.listadapter.R
 import com.example.listadapter.app.domain.model.ResultsItem
-import com.example.listadapter.databinding.CarouselItemLayoutBinding
-import com.example.listadapter.databinding.FeaturedItemLayoutBinding
-import com.example.listadapter.databinding.ShoppableItemLayoutBinding
 import com.example.listadapter.app.persentation.listners.OnItemClick
-import com.example.listadapter.databinding.NestedItemLayoutBinding
+import com.example.listadapter.databinding.*
 import java.lang.IllegalArgumentException
 
 class MainRecyclerViewAdapter(private val onItemClick: OnItemClick) : ListAdapter<ResultsItem, ViewHolder>(diffUtilCallBack) {
@@ -37,7 +34,7 @@ class MainRecyclerViewAdapter(private val onItemClick: OnItemClick) : ListAdapte
             "featured" -> R.layout.featured_item_layout
             "shoppable_carousel" -> R.layout.shoppable_item_layout
             "carousel" -> R.layout.carousel_item_layout
-            "item" -> R.layout.nested_item_layout
+            "item" -> R.layout.item_layout
             else -> "Invalid View Type".toInt()
         }
     }
@@ -57,8 +54,8 @@ class MainRecyclerViewAdapter(private val onItemClick: OnItemClick) : ListAdapte
                 val binding = CarouselItemLayoutBinding.inflate(layoutInflater, parent, false)
                 ViewHolder.CarouselViewHolder(binding)
             }
-            R.layout.nested_item_layout -> {
-                val binding = NestedItemLayoutBinding.inflate(layoutInflater, parent, false)
+            R.layout.item_layout -> {
+                val binding = ItemLayoutBinding.inflate(layoutInflater, parent, false)
                 ViewHolder.ItemViewHolder(binding)
             }
             else -> throw IllegalArgumentException("Invalid View Type")
@@ -111,7 +108,7 @@ sealed class ViewHolder(binding: ViewBinding) : RecyclerView.ViewHolder(binding.
         }
     }
 
-    class ItemViewHolder(private val binding: NestedItemLayoutBinding) : ViewHolder(binding) {
+    class ItemViewHolder(private val binding: ItemLayoutBinding) : ViewHolder(binding) {
         fun bindData(result: ResultsItem, onItemClick: OnItemClick) {
             binding.apply {
                 tvItemName.text = result.item?.name

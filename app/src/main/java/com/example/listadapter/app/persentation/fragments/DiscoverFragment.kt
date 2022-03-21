@@ -77,8 +77,8 @@ class DiscoverFragment : Fragment(), OnItemClick {
                     R.layout.featured_item_layout -> 3
                     R.layout.carousel_item_layout -> 3
                     R.layout.shoppable_item_layout -> 3
-                    R.layout.nested_item_layout -> 1
-                    else -> 3
+                    R.layout.item_layout -> 1
+                    else ->1
                 }
         }
 
